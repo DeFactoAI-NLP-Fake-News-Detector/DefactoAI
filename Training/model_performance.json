@@ -1,0 +1,30 @@
+{
+  "model_info": {
+    "model_name": "distilbert-base-uncased",
+    "device": "cpu",
+    "max_length": 256
+  },
+  "training_config": {
+    "learning_rate": 5e-05,
+    "batch_size": 64
+  },
+  "performance_metrics": {
+    "test_accuracy": 0.9553333333333334,
+    "test_f1": 0.9553299781183564,
+    "test_precision": 0.9554701768175683,
+    "test_recall": 0.9553333333333334,
+    "real_news_f1": 0.9557171183079973,
+    "fake_news_f1": 0.9549428379287155,
+    "confusion_matrix": [
+      [
+        723,
+        27
+      ],
+      [
+        40,
+        710
+      ]
+    ],
+    "evaluation_timestamp": "2025-08-04T20:16:16.985242"
+  }
+}
