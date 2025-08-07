@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DefactoAI - News Verification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'premium-blue': '#0F172A',
+                        'premium-purple': '#6366F1',
+                        'premium-cyan': '#06B6D4',
+                        'premium-emerald': '#10B981',
+                        'premium-rose': '#F43F5E',
+                        'premium-amber': '#F59E0B'
+                    },
+                    animation: {
+                        'thinking': 'thinking 2s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s ease-in-out infinite',
+                        'bounce-slow': 'bounce 2s infinite',
+                        'spin-slow': 'spin 3s linear infinite'
+                    },
+                    keyframes: {
+                        thinking: {
+                            '0%, 100%': { transform: 'scale(1)', opacity: '0.7' },
+                            '50%': { transform: 'scale(1.05)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-premium-blue via-slate-900 to-premium-blue text-white">
+    <!-- Navigation -->
+    <nav class="p-6">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-r from-premium-purple to-premium-cyan rounded-lg flex items-center justify-center">
+                    <i class="fas fa-shield-alt text-white text-lg"></i>
+                </div>
+                <h1 class="text-2xl font-bold bg-gradient-to-r from-premium-cyan to-premium-purple bg-clip-text text-transparent">
+                    DefactoAI
+                </h1>
+            </div>
+            <div class="text-sm text-gray-400">
+                Powered by Advanced AI
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="max-w-4xl mx-auto px-6 pb-12">
+        <!-- Hero Section -->
+        <div class="text-center mb-12">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                Verify News with AI
+            </h2>
+            <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+                Advanced machine learning technology to detect fake news and provide detailed reasoning
+            </p>
+        </div>
+
+        <!-- Main Card -->
+        <div class="bg-white/5 backdrop-blur-lg rounded-2xl border border-white/10 shadow-2xl p-8">
+            <!-- Input Section -->
+            <div id="inputSection" class="space-y-6">
+                <div>
+                    <label for="newsText" class="block text-lg font-semibold mb-3 text-gray-200">
+                        <i class="fas fa-newspaper text-premium-cyan mr-2"></i>
+                        Enter News Content
+                    </label>
+                    <textarea 
+                        id="newsText" 
+                        rows="8" 
+                        placeholder="Paste the news article or content you want to verify here..."
+                        class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-premium-cyan focus:border-transparent resize-none transition-all duration-300"
+                    ></textarea>
+                </div>
+                
+                <button 
+                    id="verifyBtn"
+                    onclick="verifyNews()"
+                    class="w-full bg-gradient-to-r from-premium-purple to-premium-cyan hover:from-premium-cyan hover:to-premium-purple text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-premium-purple/50 shadow-lg hover:shadow-xl"
+                >
+                    <i class="fas fa-search mr-2"></i>
+                    Verify News
+                </button>
+            </div>
+
+            <!-- Loading Section -->
+            <div id="loadingSection" class="hidden text-center py-12">
+                <div class="inline-flex items-center justify-center space-x-4">
+                    <div class="relative">
+                        <div class="w-16 h-16 border-4 border-premium-cyan/30 border-t-premium-cyan rounded-full animate-spin"></div>
+                        <div class="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-premium-purple rounded-full animate-spin-slow"></div>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <h3 class="text-xl font-semibold text-premium-cyan animate-pulse">AI Analysis in Progress</h3>
+                    <p class="text-gray-300 mt-2">
+                        <span id="loadingText">Processing content...</span>
+                    </p>
+                </div>
+                <div class="flex justify-center space-x-2 mt-4">
+                    <div class="w-3 h-3 bg-premium-cyan rounded-full animate-bounce"></div>
+                    <div class="w-3 h-3 bg-premium-purple rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                    <div class="w-3 h-3 bg-premium-emerald rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsSection" class="hidden">
+                <div class="text-center mb-6">
+                    <div id="resultIcon" class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-3xl">
+                    </div>
+                    <h3 id="resultTitle" class="text-2xl font-bold mb-2"></h3>
+                    <div id="confidenceBar" class="w-full bg-gray-700 rounded-full h-3 mb-2">
+                        <div id="confidenceProgress" class="h-3 rounded-full transition-all duration-1000 ease-out"></div>
+                    </div>
+                    <p id="confidenceText" class="text-sm text-gray-300"></p>
+                </div>
+
+                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
+                    <h4 class="text-lg font-semibold mb-3 text-premium-cyan">
+                        <i class="fas fa-brain mr-2"></i>
+                        AI Reasoning
+                    </h4>
+                    <p id="reasoningText" class="text-gray-200 leading-relaxed"></p>
+                </div>
+
+                <button 
+                    id="verifyAnotherBtn"
+                    onclick="resetForm()"
+                    class="w-full mt-6 bg-gradient-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-500/50"
+                >
+                    <i class="fas fa-plus mr-2"></i>
+                    Verify Another News
+                </button>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="grid md:grid-cols-3 gap-6 mt-12">
+            <div class="text-center p-6 bg-white/5 rounded-xl border border-white/10 backdrop-blur-lg">
+                <div class="w-12 h-12 bg-gradient-to-r from-premium-emerald to-green-400 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                    <i class="fas fa-bolt text-white"></i>
+                </div>
+                <h4 class="font-semibold mb-2 text-premium-emerald">Lightning Fast</h4>
+                <p class="text-gray-400 text-sm">Get results in seconds with our optimized AI models</p>
+            </div>
+            
+            <div class="text-center p-6 bg-white/5 rounded-xl border border-white/10 backdrop-blur-lg">
+                <div class="w-12 h-12 bg-gradient-to-r from-premium-purple to-indigo-400 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                    <i class="fas fa-chart-line text-white"></i>
+                </div>
+                <h4 class="font-semibold mb-2 text-premium-purple">High Accuracy</h4>
+                <p class="text-gray-400 text-sm">Advanced BERT models trained on millions of articles</p>
+            </div>
+            
+            <div class="text-center p-6 bg-white/5 rounded-xl border border-white/10 backdrop-blur-lg">
+                <div class="w-12 h-12 bg-gradient-to-r from-premium-cyan to-blue-400 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                    <i class="fas fa-shield-check text-white"></i>
+                </div>
+                <h4 class="font-semibold mb-2 text-premium-cyan">Detailed Analysis</h4>
+                <p class="text-gray-400 text-sm">Get comprehensive reasoning behind each prediction</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let loadingMessages = [
+            "Processing content...",
+            "Analyzing patterns...",
+            "Cross-referencing sources...",
+            "Generating insights...",
+            "Finalizing results..."
+        ];
+        
+        let messageIndex = 0;
+        let loadingInterval;
+
+        function verifyNews() {
+            const newsText = document.getElementById('newsText').value.trim();
+            
+            if (!newsText) {
+                alert('Please enter some news content to verify.');
+                return;
+            }
+
+            // Show loading section
+            document.getElementById('inputSection').classList.add('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('loadingSection').classList.remove('hidden');
+            
+            // Start loading message rotation
+            messageIndex = 0;
+            loadingInterval = setInterval(() => {
+                document.getElementById('loadingText').textContent = loadingMessages[messageIndex];
+                messageIndex = (messageIndex + 1) % loadingMessages.length;
+            }, 600);
+
+            // Make API call
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: newsText })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Wait at least 3 seconds for the animation
+                setTimeout(() => {
+                    clearInterval(loadingInterval);
+                    showResults(data);
+                }, 3000);
+            })
+            .catch(error => {
+                clearInterval(loadingInterval);
+                console.error('Error:', error);
+                alert('An error occurred while verifying the news. Please try again.');
+                resetForm();
+            });
+        }
+
+        function showResults(data) {
+            document.getElementById('loadingSection').classList.add('hidden');
+            document.getElementById('resultsSection').classList.remove('hidden');
+
+            const isReal = data.prediction === 'real';
+            const confidence = Math.round(data.confidence * 100);
+            
+            // Update result icon and title
+            const resultIcon = document.getElementById('resultIcon');
+            const resultTitle = document.getElementById('resultTitle');
+            
+            if (isReal) {
+                resultIcon.className = 'w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-3xl bg-gradient-to-r from-premium-emerald to-green-400';
+                resultIcon.innerHTML = '<i class="fas fa-check-circle text-white"></i>';
+                resultTitle.textContent = 'Likely REAL News';
+                resultTitle.className = 'text-2xl font-bold mb-2 text-premium-emerald';
+            } else {
+                resultIcon.className = 'w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-3xl bg-gradient-to-r from-premium-rose to-red-400';
+                resultIcon.innerHTML = '<i class="fas fa-exclamation-triangle text-white"></i>';
+                resultTitle.textContent = 'Likely FAKE News';
+                resultTitle.className = 'text-2xl font-bold mb-2 text-premium-rose';
+            }
+
+            // Update confidence bar
+            const confidenceProgress = document.getElementById('confidenceProgress');
+            const confidenceText = document.getElementById('confidenceText');
+            
+            confidenceProgress.style.width = confidence + '%';
+            confidenceProgress.className = `h-3 rounded-full transition-all duration-1000 ease-out ${
+                isReal ? 'bg-gradient-to-r from-premium-emerald to-green-400' : 'bg-gradient-to-r from-premium-rose to-red-400'
+            }`;
+            
+            confidenceText.textContent = `Confidence: ${confidence}%`;
+
+            // Update reasoning
+            document.getElementById('reasoningText').textContent = data.reasoning;
+        }
+
+        function resetForm() {
+            document.getElementById('newsText').value = '';
+            document.getElementById('inputSection').classList.remove('hidden');
+            document.getElementById('loadingSection').classList.add('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
+            
+            // Clear any running intervals
+            if (loadingInterval) {
+                clearInterval(loadingInterval);
+            }
+        }
+
+        // Auto-resize textarea
+        document.getElementById('newsText').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+    </script>
+</body>
+</html>

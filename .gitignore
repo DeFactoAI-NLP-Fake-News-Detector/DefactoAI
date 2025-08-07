@@ -1,2 +1,36 @@
 Training/final_bert_model/
 Training/processed_fake_news_data.csv
+
+# Streamlit secrets
+.streamlit/secrets.toml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.env
+.venv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Dataset folder (optional - if datasets are too large)
+# Dataset/
+
+# Temporary files
+*.tmp
+*.temp

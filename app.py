@@ -1,153 +1,4 @@
-# # from flask import Flask, request, jsonify, render_template
-# # import torch
-# # from transformers import AutoTokenizer, AutoModelForSequenceClassification
-# # from groq import Groq
- 
-# # app = Flask(__name__)
- 
-# # model = AutoModelForSequenceClassification.from_pretrained('./final_bert_model')
-# # tokenizer = AutoTokenizer.from_pretrained('./final_bert_model')
-# # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-# # model.to(device)
-# # model.eval()
- 
- 
- 
-# # def get_reasoning_from_groq(text, prediction):
-# #     prompt = (
-# #         f"Given the following news article:\n\n{text}\n\n"
-# #         f"The model predicted this news as '{prediction}'.\n"
-# #         f"Please provide a clear and concise reasoning why this news is '{prediction}'."
-# #     )
- 
-# #     completion = client.chat.completions.create(
-# #         model="meta-llama/llama-4-scout-17b-16e-instruct",
-# #         messages=[{"role": "user", "content": prompt}],
-# #         temperature=1,
-# #         max_completion_tokens=512,
-# #         top_p=1,
-# #         stream=False,
-# #         stop=None
-# #     )
- 
-# #     # Since stream=False, the completion object contains the full response
-# #     reasoning = completion.choices[0].message.content
-# #     return reasoning.strip() if reasoning else ""
- 
- 
- 
-# # @app.route('/predict', methods=['POST'])
-# # def predict():
-# #     data = request.json
-# #     text = data['text']
- 
-# #     inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=256)
-# #     inputs = {k: v.to(device) for k, v in inputs.items()}
- 
-# #     with torch.no_grad():
-# #         outputs = model(**inputs)
-# #         prediction_probs = torch.softmax(outputs.logits, dim=-1)
-# #         predicted_class = torch.argmax(prediction_probs, dim=-1).item()
-# #         confidence = prediction_probs[0][predicted_class].item()
- 
-# #     result = "fake" if predicted_class == 1 else "real"
-# #     reasoning = get_reasoning_from_groq(text, result)
- 
-# #     return jsonify({
-# #         'prediction': result,
-# #         'confidence': round(confidence, 4),
-# #         'reasoning': reasoning
-# #     })
-
-# # @app.route('/')
-# # def home():
-# #     return render_template("home.html")
- 
-# # if __name__ == '__main__':
-# #     app.run(debug=True, host='0.0.0.0', port=5000)
-
-# from flask import Flask, request, jsonify, render_template
-# import torch
-# from transformers import AutoTokenizer, AutoModelForSequenceClassification
-# from groq import Groq
-# import os
-
-# app = Flask(__name__)
-
-# # Load model from correct path
-# model = AutoModelForSequenceClassification.from_pretrained('./Training/final_bert_model')
-# tokenizer = AutoTokenizer.from_pretrained('./Training/final_bert_model')
-# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-# model.to(device)
-# model.eval()
-
-# # Initialize Groq client
-
-
-# def get_reasoning_from_groq(text, prediction):
-#     try:
-#         prompt = (
-#             f"Given the following news article:\n\n{text}\n\n"
-#             f"The model predicted this news as '{prediction}'.\n"
-#             f"Please provide a clear and concise reasoning why this news is '{prediction}'."
-#         )
-
-#         completion = client.chat.completions.create(
-#             model="llama3-8b-8192",  # More reliable model
-#             messages=[{"role": "user", "content": prompt}],
-#             temperature=0.7,
-#             max_tokens=512,
-#             top_p=1,
-#             stream=False,
-#             stop=None
-#         )
-
-#         reasoning = completion.choices[0].message.content
-#         return reasoning.strip() if reasoning else "Unable to generate reasoning."
-    
-#     except Exception as e:
-#         print(f"Groq API Error: {e}")
-#         return f"Unable to generate AI reasoning at this time. Error: {str(e)}"
-
-# @app.route('/predict', methods=['POST'])
-# def predict():
-#     try:
-#         data = request.json
-#         text = data['text']
-
-#         inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=256)
-#         inputs = {k: v.to(device) for k, v in inputs.items()}
-
-#         with torch.no_grad():
-#             outputs = model(**inputs)
-#             prediction_probs = torch.softmax(outputs.logits, dim=-1)
-#             predicted_class = torch.argmax(prediction_probs, dim=-1).item()
-#             confidence = prediction_probs[0][predicted_class].item()
-
-#         result = "fake" if predicted_class == 1 else "real"
-#         reasoning = get_reasoning_from_groq(text, result)
-
-#         return jsonify({
-#             'prediction': result,
-#             'confidence': round(confidence, 4),
-#             'reasoning': reasoning,
-#             'status': 'success'
-#         })
-    
-#     except Exception as e:
-#         return jsonify({
-#             'error': str(e),
-#             'status': 'error'
-#         }), 500
-
-# @app.route('/')
-# def home():
-#     return render_template("home.html")
-
-# if __name__ == '__main__':
-#     app.run(debug=True, host='0.0.0.0', port=5000)
-
- import streamlit as st
+import streamlit as st
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from groq import Groq
@@ -186,26 +37,8 @@ def load_model():
 def get_reasoning_from_groq(text, prediction):
     """Get reasoning from Groq API"""
     try:
-        # Try to get API key from multiple sources
-        api_key = None
-        
-        # Method 1: From Streamlit secrets
-        try:
-            api_key = st.secrets["GROQ_API_KEY"]
-        except:
-            pass
-        
-        # Method 2: From environment variable
-        if not api_key:
-            api_key = os.getenv("GROQ_API_KEY")
-        
-        # Method 3: Fallback to hardcoded (for testing)
-        if not api_key:
-            return
-
-        if not api_key:
-            return "❌ Groq API key not found. Please check your secrets configuration."
-        
+        # Get API key from Streamlit secrets
+        api_key = st.secrets.get("GROQ_API_KEY")
         client = Groq(api_key=api_key)
         
         prompt = (
@@ -227,8 +60,7 @@ def get_reasoning_from_groq(text, prediction):
         reasoning = completion.choices[0].message.content
         return reasoning.strip() if reasoning else "Unable to generate reasoning."
     except Exception as e:
-        st.error(f"Groq API Error: {str(e)}")
-        return f"🤖 AI reasoning temporarily unavailable. The prediction model is working correctly, but the explanation service encountered an error: {str(e)}"
+        return f"Error generating reasoning: {str(e)}"
 
 def predict_news(text, model, tokenizer, device):
     """Make prediction on news text"""
